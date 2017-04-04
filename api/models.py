@@ -16,3 +16,15 @@ class Membership(models.Model):
     user_id = models.IntegerField()
     jaunt = models.ForeignKey(Jaunt, on_delete=models.CASCADE)
 
+
+class Photo(models.Model):
+    id = models.IntegerField(primary_key=True)
+    owner = models.IntegerField()
+    original_url = models.CharField(max_length=512)
+    thumbnail_url = models.CharField(max_length=512)
+    taken_at = models.DateTimeField()
+    jaunt = models.ForeignKey(Jaunt, on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    deleted = models.BooleanField()
+
