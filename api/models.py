@@ -11,3 +11,8 @@ class Jaunt(models.Model):
     title = models.CharField(max_length=256)
     shortcode = models.CharField(max_length=32)
 
+
+class Membership(models.Model):
+    user_id = models.IntegerField()
+    jaunt = models.ForeignKey(Jaunt, on_delete=models.CASCADE)
+
