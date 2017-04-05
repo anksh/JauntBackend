@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from api.models import Jaunt
+from api.models import Membership
 from api.serializers import jaunt_serializer
 
 
@@ -26,6 +27,7 @@ def create_jaunt(request):
         shortcode = get_next_shortcode()
         params_dict['shortcode'] = shortcode
         new_obj = Jaunt.objects.create(**params_dict)
+        add_user_to_jaunt(params_dict['owner'], new_obj)
         return JsonResponse({
             'id': new_obj.id,
             'shortcode': shortcode
@@ -38,3 +40,19 @@ def get_jaunt(request, id):
         return JsonResponse(jaunt_serializer(obj))
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Invalid id.'}, status=404)
+
+@csrf_exempt
+def join_jaunt(request):
+    if request.method == 'POST':
+        params_dict = json.loads(request.body)
+        try:
+            obj = Jaunt.objects.get(shortcode=params_dict['shortcode'])
+            add_user_to_jaunt(params_dict['user_id'], obj)
+            return JsonResponse({'status': 'Successfully added to {}'.format(obj.title)})
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Invalid Shortcode.'}, status=404)
+
+
+def add_user_to_jaunt(user_id, jaunt):
+    obj = Membership.objects.create(user_id=user_id, jaunt=jaunt)
+    return obj
