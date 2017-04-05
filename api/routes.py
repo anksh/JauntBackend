@@ -1,11 +1,12 @@
-from copy import copy
 import json
 import pickle
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from api.models import Jaunt
+from api.serializers import jaunt_serializer
 
 
 def get_next_shortcode():
@@ -16,6 +17,7 @@ def get_next_shortcode():
         to_return = words_list.pop()
         f.write(pickle.dumps(words_list))
         return to_return
+
 
 @csrf_exempt
 def create_jaunt(request):
@@ -29,3 +31,10 @@ def create_jaunt(request):
             'shortcode': shortcode
         })
 
+
+def get_jaunt(request, id):
+    try:
+        obj = Jaunt.objects.get(id=id)
+        return JsonResponse(jaunt_serializer(obj))
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Invalid id.'}, status=404)
