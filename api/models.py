@@ -4,9 +4,9 @@ from django.db import models
 
 
 class Jaunt(models.Model):
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    live = models.BooleanField()
+    start_date = models.DateTimeField(null=True)
+    end_date = models.DateTimeField(null=True)
+    live = models.BooleanField(default=False)
     owner = models.IntegerField()
     title = models.CharField(max_length=256)
     shortcode = models.CharField(max_length=32)
@@ -27,4 +27,3 @@ class Photo(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     deleted = models.BooleanField()
-

@@ -1,7 +1,11 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 
-from api.views import basic_test
+from api.routes import *
 
+
+jaunt_urls = [
+    url(r'^create/', create_jaunt)
+]
 urlpatterns = [
-    url(r'^test/', basic_test)
+    url(r'^jaunt/', include(jaunt_urls))
 ]
