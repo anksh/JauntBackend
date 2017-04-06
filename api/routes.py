@@ -27,7 +27,9 @@ def create_jaunt(request):
         shortcode = get_next_shortcode()
         params_dict['shortcode'] = shortcode
         new_obj = Jaunt.objects.create(**params_dict)
+        # TODO: check if jaunt should be live
         add_user_to_jaunt(params_dict['owner'], new_obj)
+        # TODO: create empty list for pictures and locations
         return JsonResponse({
             'id': new_obj.id,
             'shortcode': shortcode
@@ -51,6 +53,7 @@ def join_jaunt(request):
             return JsonResponse({'status': 'Successfully added to {}'.format(obj.title)})
         except ObjectDoesNotExist:
             return JsonResponse({'error': 'Invalid Shortcode.'}, status=404)
+    # TODO: check if jaunt is live
 
 
 def add_user_to_jaunt(user_id, jaunt):
