@@ -28,6 +28,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['52.14.166.41']
 
+with open('Jaunt/firebase_key.txt') as f:
+    FIREBASE_KEY = f.read().strip()
+
+FIREBASE_CONFIG = {
+    "apiKey": FIREBASE_KEY,
+    "authDomain": "jaunt-a57b2.firebaseapp.com",
+    "databaseURL": "https://jaunt-a57b2.firebaseio.com",
+    "storageBucket": "jaunt-a57b2.appspot.com",
+    "projectId": "jaunt-a57b2",
+}
+
 
 # Application definition
 

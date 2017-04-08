@@ -9,5 +9,7 @@ jaunt_urls = [
     url(r'^join/', join_jaunt)
 ]
 urlpatterns = [
-    url(r'^jaunt/', include(jaunt_urls))
+    url(r'^jaunt/', include(jaunt_urls)),
+    url(r'^photo/', add_photo)
+
 ]

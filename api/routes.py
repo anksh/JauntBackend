@@ -1,5 +1,6 @@
 import json
 import pickle
+import pyrebase
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
@@ -8,7 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from api.models import Jaunt
 from api.models import Membership
 from api.serializers import jaunt_serializer
+from Jaunt.settings import FIREBASE_CONFIG
 
+firebase = pyrebase.initialize_app(FIREBASE_CONFIG)
 
 def get_next_shortcode():
     with open('api/words.txt', 'rb') as f:
@@ -59,3 +62,8 @@ def join_jaunt(request):
 def add_user_to_jaunt(user_id, jaunt):
     obj = Membership.objects.create(user_id=user_id, jaunt=jaunt)
     return obj
+
+
+@csrf_exempt
+def add_photo(request):
+    pass
