@@ -26,7 +26,8 @@ with open('Jaunt/secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['52.14.166.41']
+ALLOWED_HOSTS = ['52.14.166.41',
+                 'localhost']
 
 with open('Jaunt/firebase_key.txt') as f:
     FIREBASE_KEY = f.read().strip()

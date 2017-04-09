@@ -1,1 +1,2 @@
 pyrebase
+Pillow >= 2.0.0
