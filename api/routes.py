@@ -34,7 +34,7 @@ def get_next_shortcode():
 @csrf_exempt
 def create_jaunt(request):
     if request.method == 'POST':
-        params_dict = json.loads(request.body)
+        params_dict = json.loads(request.body.decode())
         shortcode = get_next_shortcode()
         params_dict['shortcode'] = shortcode
         new_obj = Jaunt.objects.create(**params_dict)
@@ -57,7 +57,7 @@ def get_jaunt(request, id):
 @csrf_exempt
 def join_jaunt(request):
     if request.method == 'POST':
-        params_dict = json.loads(request.body)
+        params_dict = json.loads(request.body.decode())
         try:
             obj = Jaunt.objects.get(shortcode=params_dict['shortcode'])
             add_user_to_jaunt(params_dict['user_id'], obj)
@@ -75,7 +75,7 @@ def add_user_to_jaunt(user_id, jaunt):
 @csrf_exempt
 def add_photo(request):
     if request.method == 'POST':
-        params_dict = json.loads(request.body)
+        params_dict = json.loads(request.body.decode())
         thumbnail_path = convert_firebase_image_to_thumbnail(params_dict['original_path'])
         try:
             jaunt_obj = Jaunt.objects.get(id=params_dict.pop('jaunt_id'))
