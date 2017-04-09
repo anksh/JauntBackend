@@ -21,6 +21,7 @@ firebase = pyrebase.initialize_app(FIREBASE_CONFIG)
 storage = firebase.storage()
 db = firebase.database()
 
+
 def get_next_shortcode():
     with open('api/words.txt', 'rb') as f:
         words_list = pickle.loads(f.read())
@@ -40,7 +41,6 @@ def create_jaunt(request):
         new_obj = Jaunt.objects.create(**params_dict)
         # TODO: check if jaunt should be live
         add_user_to_jaunt(params_dict['owner'], new_obj)
-        # TODO: create empty list for pictures and locations
         return JsonResponse({
             'id': new_obj.id,
             'shortcode': shortcode
@@ -114,6 +114,7 @@ def get_thumbnail_path(firebase_path):
     image_name = split_path[-1]
     split_path.pop()
     image_name = "thumb_{}".format(image_name)
+    split_path.append('thumbnails')
     split_path.append(image_name)
     return '/'.join(split_path)
 

@@ -22,4 +22,4 @@ def photo_serializer(obj):
         'deleted': obj.deleted
     }
 
-    return  photo_dict
+    return photo_dict
