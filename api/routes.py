@@ -3,6 +3,7 @@ import os
 import pickle
 import pyrebase
 
+from datetime import datetime
 from PIL import Image
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -11,11 +12,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 from api.models import Jaunt
 from api.models import Membership
+from api.models import Photo
 from api.serializers import jaunt_serializer
+from api.serializers import photo_serializer
 from Jaunt.settings import FIREBASE_CONFIG
 
 firebase = pyrebase.initialize_app(FIREBASE_CONFIG)
 storage = firebase.storage()
+db = firebase.database()
 
 def get_next_shortcode():
     with open('api/words.txt', 'rb') as f:
@@ -72,8 +76,25 @@ def add_user_to_jaunt(user_id, jaunt):
 def add_photo(request):
     if request.method == 'POST':
         params_dict = json.loads(request.body)
-        thumbnail_path = convert_firebase_image_to_thumbnail(params_dict['download_path'])
-        return JsonResponse({'thumbnail': thumbnail_path})
+        thumbnail_path = convert_firebase_image_to_thumbnail(params_dict['original_path'])
+        try:
+            jaunt_obj = Jaunt.objects.get(id=params_dict.pop('jaunt_id'))
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Invalid jaunt_id.'})
+        except KeyError:
+            return JsonResponse({'error': 'Must pass in jaunt_id.'})
+
+
+        params_dict['jaunt'] = jaunt_obj
+        params_dict['thumbnail_path'] = thumbnail_path
+        params_dict['taken_at'] = datetime.now()
+        params_dict['deleted'] = False
+
+        photo_obj = Photo.objects.create(**params_dict)
+        serialized_photo = photo_serializer(photo_obj)
+        db.child('jaunt/{}/photos'.format(jaunt_obj.id)).push(serialized_photo)
+
+        return JsonResponse(serialized_photo)
 
 
 def convert_firebase_image_to_thumbnail(firebase_path):
