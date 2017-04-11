@@ -124,3 +124,20 @@ def convert_image_to_thumbnail(image_name, thumb_name):
     im = Image.open(image_name)
     im.thumbnail(size)
     im.save(thumb_name)
+
+
+def get_user(request, uid):
+    if request.method == 'GET':
+        user_json = db.child('users').child(uid).get().val()
+        if user_json is None:
+            return JsonResponse({'error': 'Invalid UID'})
+        return JsonResponse(user_json)
+
+
+@csrf_exempt
+def create_user(request):
+    if request.method == 'POST':
+        user_json = json.loads(request.body.decode())
+        user_json['current_jaunt'] = -1
+        db.child("users").child(user_json['uid']).set(user_json)
+        return JsonResponse(user_json)
