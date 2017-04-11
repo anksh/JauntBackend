@@ -113,8 +113,8 @@ def get_thumbnail_path(firebase_path):
     split_path = firebase_path.split('/')
     image_name = split_path[-1]
     split_path.pop()
-    image_name = "thumb_{}".format(image_name)
-    split_path.append('thumbnails')
+    image_name = "square_{}".format(image_name)
+    split_path.append('square_images')
     split_path.append(image_name)
     return '/'.join(split_path)
 
