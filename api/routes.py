@@ -76,7 +76,7 @@ def add_user_to_jaunt(user_id, jaunt):
 def add_photo(request):
     if request.method == 'POST':
         params_dict = json.loads(request.body.decode())
-        thumbnail_path = convert_firebase_image_to_thumbnail(params_dict['original_path'])
+        thumbnail_path = convert_firebase_image_to_square(params_dict['original_path'])
         try:
             jaunt_obj = Jaunt.objects.get(id=params_dict.pop('jaunt_id'))
         except ObjectDoesNotExist:
@@ -97,12 +97,12 @@ def add_photo(request):
         return JsonResponse(serialized_photo)
 
 
-def convert_firebase_image_to_thumbnail(firebase_path):
+def convert_firebase_image_to_square(firebase_path):
     temp_image_filename = 'temp_file.png'
-    temp_thumb_name = 'thumb_temp_file.png'
+    temp_thumb_name = 'square_temp_file.png'
     storage.child(firebase_path).download(temp_image_filename)
     thumbnail_path = get_thumbnail_path(firebase_path)
-    convert_image_to_thumbnail(temp_image_filename, temp_thumb_name)
+    convert_image_to_square(temp_image_filename, temp_thumb_name)
     storage.child(thumbnail_path).put(temp_thumb_name)
     os.remove(temp_image_filename)
     os.remove(temp_thumb_name)
