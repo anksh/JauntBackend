@@ -119,11 +119,10 @@ def get_thumbnail_path(firebase_path):
     return '/'.join(split_path)
 
 
-def convert_image_to_thumbnail(image_name, thumb_name):
-    size = 256, 256
+def convert_image_to_square(image_name, thumb_name):
     im = Image.open(image_name)
-    im.thumbnail(size)
-    im.save(thumb_name)
+    square_image = im.crop((0, 0, min(im.size), min(im.size)))
+    square_image.save(thumb_name)
 
 
 def get_user(request, uid):
