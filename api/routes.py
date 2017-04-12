@@ -74,12 +74,8 @@ def join_jaunt(request):
 def leave_jaunt(request):
     if request.method == 'POST':
         params_dict = json.loads(request.body.decode())
-        try:
-            Membership.objects.get(user_id=params_dict['user_id'], jaunt__shortcode=params_dict['shortcode'])
-            db.child('users').child(params_dict['user_id']).update({"current_jaunt": -1})
-            return JsonResponse({'status': 'Successfully left {}'.format(params_dict['shortcode'])})
-        except ObjectDoesNotExist:
-            return JsonResponse({'error': 'User isn\'t a part of jaunt {}'.format(params_dict['shortcode'])})
+        db.child('users').child(params_dict['user_id']).update({"current_jaunt": -1})
+        return JsonResponse({'status': 'Successfully left {}'.format(params_dict['shortcode'])})
 
 
 def add_user_to_jaunt(user_id, jaunt):
