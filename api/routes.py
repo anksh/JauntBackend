@@ -93,9 +93,10 @@ def add_photo(request):
         params_dict = json.loads(request.body.decode())
         thumbnail_path = convert_firebase_image_to_square(params_dict['original_path'])
         try:
-            jaunt_obj = Jaunt.objects.get(id=params_dict.pop('jaunt_id'))
+            jaunt_id = params_dict.pop('jaunt_id')
+            jaunt_obj = Jaunt.objects.get(id=jaunt_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'error': 'Invalid jaunt_id.'})
+            return JsonResponse({'error': 'Invalid jaunt_id {}'.format(jaunt_id)})
         except KeyError:
             return JsonResponse({'error': 'Must pass in jaunt_id.'})
 
