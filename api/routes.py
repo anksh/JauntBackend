@@ -135,7 +135,7 @@ def get_thumbnail_path(firebase_path):
 
 
 def convert_image_to_square(image_name, thumb_name):
-    im = Image.open(image_name)
+    im = Image.open(image_name).rotate(270)
     square_image = im.crop((0, 0, min(im.size), min(im.size)))
     square_image.save(thumb_name)
 
