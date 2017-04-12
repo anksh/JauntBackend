@@ -41,6 +41,7 @@ def create_jaunt(request):
         new_obj = Jaunt.objects.create(**params_dict)
         # TODO: check if jaunt should be live
         add_user_to_jaunt(params_dict['owner'], new_obj)
+        db.child('users').child(params_dict['owner']).update({"current_jaunt": new_obj.id})
         return JsonResponse({
             'id': new_obj.id,
             'shortcode': shortcode
@@ -54,6 +55,7 @@ def get_jaunt(request, id):
     except ObjectDoesNotExist:
         return JsonResponse({'error': 'Invalid id.'}, status=404)
 
+
 @csrf_exempt
 def join_jaunt(request):
     if request.method == 'POST':
@@ -61,10 +63,23 @@ def join_jaunt(request):
         try:
             obj = Jaunt.objects.get(shortcode=params_dict['shortcode'])
             add_user_to_jaunt(params_dict['user_id'], obj)
-            return JsonResponse({'status': 'Successfully added to {}'.format(obj.title)})
+            db.child('users').child(params_dict['user_id']).update({"current_jaunt": obj.id})
+            return JsonResponse({'status': 'Successfully added to {}'.format(obj.shortcode)})
         except ObjectDoesNotExist:
             return JsonResponse({'error': 'Invalid Shortcode.'}, status=404)
     # TODO: check if jaunt is live
+
+
+@csrf_exempt
+def leave_jaunt(request):
+    if request.method == 'POST':
+        params_dict = json.loads(request.body.decode())
+        try:
+            Membership.objects.get(user_id=params_dict['user_id'], jaunt__shortcode=params_dict['shortcode'])
+            db.child('users').child(params_dict['user_id']).update({"current_jaunt": -1})
+            return JsonResponse({'status': 'Successfully left {}'.format(params_dict['shortcode'])})
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'User isn\'t a part of jaunt {}'.format(params_dict['shortcode'])})
 
 
 def add_user_to_jaunt(user_id, jaunt):
@@ -125,11 +140,11 @@ def convert_image_to_square(image_name, thumb_name):
     square_image.save(thumb_name)
 
 
-def get_user(request, uid):
+def get_user(request, user_id):
     if request.method == 'GET':
-        user_json = db.child('users').child(uid).get().val()
+        user_json = db.child('users').child(user_id).get().val()
         if user_json is None:
-            return JsonResponse({'error': 'Invalid UID'})
+            return JsonResponse({'error': 'Invalid User ID'})
         return JsonResponse(user_json)
 
 
@@ -138,5 +153,5 @@ def create_user(request):
     if request.method == 'POST':
         user_json = json.loads(request.body.decode())
         user_json['current_jaunt'] = -1
-        db.child("users").child(user_json['uid']).set(user_json)
+        db.child("users").child(user_json['user_id']).set(user_json)
         return JsonResponse(user_json)
