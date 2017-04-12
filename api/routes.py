@@ -64,7 +64,7 @@ def join_jaunt(request):
             obj = Jaunt.objects.get(shortcode=params_dict['shortcode'])
             add_user_to_jaunt(params_dict['user_id'], obj)
             db.child('users').child(params_dict['user_id']).update({"current_jaunt": obj.id})
-            return JsonResponse({'status': 'Successfully added to {}'.format(obj.shortcode)})
+            return JsonResponse({'jaunt_id': obj.id})
         except ObjectDoesNotExist:
             return JsonResponse({'error': 'Invalid Shortcode.'}, status=404)
     # TODO: check if jaunt is live
